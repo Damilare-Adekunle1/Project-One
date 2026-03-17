@@ -1,0 +1,210 @@
+---
+title: "Project 1 - Guatemala vs. United States with Gapminder"
+author: "Oluwadamilare Adekunle"
+format: docx
+editor: visual
+---
+
+# **Project 1: Exploratory Data Story with Gapminder - Guatemala vs. United States**
+
+## **Load packages each session**
+
+```{r}
+library(tidyverse)
+library(gapminder)
+```
+
+## **Load the dataset**
+
+```{r}
+data("gapminder")
+```
+
+## **Filter for Guatemala and United States**
+
+```{r}
+guatemala_df <- gapminder %>%
+  filter(country == "Guatemala")
+
+us_df <- gapminder %>%
+  filter(country == "United States")
+```
+
+## **Optional combined dataset for plots comparison**
+
+```{r}
+guat_us_df <- gapminder %>%
+  filter(country %in% c("Guatemala", "United States"))
+```
+
+## **Introduction**
+
+The country that will be examined is Guatemala. Also called the Republic of Guatemala, which is located in Central America and known for its strong Indigenous presence, especially in the highlands, which continues to shape its cultural identity. According to Stansifer, Horst, Griffith and Anderson (2026) after breaking from Spanish rule in the early 1800s, Guatemala spent many years under authoritarian and military control, eventually experiencing a long civil conflict that ended in the 1990s (CJA, 2009; Stansifer, Horst, Griffith & Anderson, 2026); democratic institutions have since developed, though political instability and fragmentation remain challenges. Despite these difficulties, Guatemala is characterized by rich cultural traditions, diverse languages, religious practices, and multiple ethnic groups, with the main two being Maya and Ladino.
+
+Guatemala stands out from a public health perspective because as explained by the World Food Programme (2023), it carries a heavy burden of preventable nutrition‑related illness, especially among young children, despite being a middle‑income nation. Deep economic hardship limits families’ ability to secure consistent, nutritious food, creating conditions where growth delays and diet‑related diseases remain widespread. These challenges are intensified in rural and Indigenous communities, where historical exclusion and limited services compound health risks. Climate pressure – particularly prolonged droughts and recurring storms – further destabilize food production, leaving subsistence farmers increasingly vulnerable (World Food Programme, 2023). At the same time, the country’s reliance on rain‑fed agriculture makes entire regions highly sensitive to environmental shocks, turning climate events into health emergencies (World Food Programme, 2023). These mentioned factors make Guatemala a critical setting for understanding how poverty, climate stress, and structural inequities converge to shape population health.
+
+Uniquely, in this project, the Gapminder dataset is used to explore life expectancy and related indicators in Guatemala over time, comparing patterns to those observed in the United States. Life expectancy, population, and gross domestic product (GDP) per capita are focused on as key outcomes that reflect how structural inequities, health system challenges, and social conditions shape population health. Prior research demonstrate how mistreatment during childbirth, limited emergency care, workforce shortages, language barriers, and discrimination influence health experiences and outcomes in Guatemala (Chary et al., 2022; Ikezoe & Horiuchi, 2025; Olivas et al., 2023; Sethi et al., 2022). These studies provide important context for interpreting trends in life expectancy and for considering how close or far the Gapminder estimates are from other sources, such as World Bank estimates of life expectancy at birth (73) and GDP per capita in thousands (6150.0) for Guatemala (World Bank Group, 2017).
+
+## **Data and variables**
+
+```{r}
+head(gapminder)
+
+summary(gapminder)
+
+# This helps look at the first six rows as well as the dataset structure 
+```
+
+```{r}
+head(guatemala_df)
+
+head(us_df)
+
+# one can check both the Guatemala and US subsets
+```
+
+In this analysis, I use the Gapminder dataset, which includes country level data on life expectancy (lifeExp), population (pop), and GDP per capita (gdpPercap) for multiple years between 1952 and 1977 (based on the years shown). I focused on two countries: Guatemala (my assigned country) and the United States (the comparison country). There were differences between the two, such as how Guatemala had a life expectancy rising from `r min(guatemala_df$lifeExp)` to `r max(guatemala_df$lifeExp)` years and the United States was between `r min(us_df$lifeExp)` to `r max(us_df$lifeExp)`
+
+## **Descriptive statistics**
+
+```{r}
+mean_lifeExp_gt <- mean(guatemala_df$lifeExp)
+sd_lifeExp_gt <- sd(guatemala_df$lifeExp)
+n_years_gt <- length(unique(guatemala_df$year))
+
+# Guatemala - Basic descriptive statistics for life expectancy
+
+print(mean_lifeExp_gt)
+print(sd_lifeExp_gt)
+print(n_years_gt)
+
+# to show output
+
+mean_lifeExp_us <- mean(us_df$lifeExp)
+sd_lifeExp_us <- sd(us_df$lifeExp)
+n_years_us <- length(unique(us_df$year))
+
+# United States - Basic descriptive statistics for life expectancy
+
+print(mean_lifeExp_us)
+print(sd_lifeExp_us)
+print(n_years_us)
+
+mean_gdp_gt <- mean(guatemala_df$gdpPercap)
+mean_gdp_us <- mean(us_df$gdpPercap)
+
+# GDP per capita summaries (optional)
+```
+
+Across `r n_years_gt` years of available data in Gapminder, the mean life expectancy in Guatemala was `r round(mean_lifeExp_gt, 1)` years (SD = `r round(sd_lifeExp_gt, 1)`). Over the same period, the United States had a mean life expectancy of `r round(mean_lifeExp_us, 1)` years (SD = `r round(sd_lifeExp_us, 1)`), based on `r n_years_us` years of data. These descriptive statistics suggest that, on average, life expectancy in Guatemala has been substantially lower than in the United States, reflecting broader differences in economic resources, health systems, and social conditions.
+
+The average GDP per capita in Guatemala over the observed years was approximately `r round(mean_gdp_gt, 0)` international dollars, compared to `r round(mean_gdp_us, 0)` in the United States. This gap can help interpret differences in life expectancy and other health outcomes between the two countries.
+
+## **Figure 1 - Life expectancy over time in Guatemala**
+
+```{r}
+ggplot(guatemala_df, 
+       aes(
+         x = year,
+         y = lifeExp)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Life Expectancy Over Time in Guatemala",
+    x = "Year",
+    y = "Life Expectancy (years)"
+  )
+```
+
+Figure 1 Interpretation:
+
+Life expectancy in Guatemala increased steadily between 1952 and around 2007, rising from a relatively low level in the early 1950s to substantially higher values by the 2000s. The plot shows a general upward trend, with no major reversals, suggesting gradual improvements in survival over time. From a public health perspective, this pattern likely reflects expansions in basic health services, vaccination, and improvements in living conditions, even in the context of political conflict and economic hardship. However, the figure alone cannot show within country inequalities – for example, differences between rural Indigenous communities and urban populations – so the gains in life expectancy may not have been experienced equally across all groups.
+
+## **Figure 2 - Comparing life expectancy over time in Guatemala and the United States**
+
+```{r}
+ggplot(guat_us_df,
+       aes(
+         x = year,
+         y = lifeExp,
+         color = country
+       )) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Life Expectancy Over Time: Guatemala vs United States",
+     x = "Year",
+    y = "Life Expectancy (years)",
+    color = "Country"
+  )
+```
+
+Figure 2 Interpretation:
+
+This figure compares life expectancy trends in Guatemala and the United States across the same time period. While both countries show upward trajectories, the United States starts at a much higher life expectancy in the 1950s and maintains a consistent advantage throughout the entire period. The gap between the two lines illustrates persistent inequalities in population health, likely driven by differences in income, health system capacity, infrastructure, and social protection. For Guatemala, the slower pace of improvement may be linked to the combined effects of poverty, under resourced health services, and structural barriers faced by rural and Indigenous communities, as described in qualitative studies of maternal health and health service experiences (Chary et al., 2022; Ikezoe & Horiuchi, 2025; Olivas et al., 2023; Sethi et al., 2022). A limitation of this comparison is that it does not account for differences in age structure or cause specific mortality, which could further clarify the drivers of the observed gap.
+
+## **Figure 3 - Life expectancy vs GDP per capita (Optional)**
+
+```{r}
+ggplot(guat_us_df,
+       aes(
+         x = gdpPercap,
+         y = lifeExp,
+         color = country
+       )) + 
+  geom_point() +
+  scale_x_log10() +
+  labs(
+    title = "Life Expectancy vs GDP per Capita",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)",
+    color = "Country"
+  )
+```
+
+Figure 3 Interpretation:
+
+This scatterplot shows the relationship between GDP per capita and life expectancy for Guatemala and the United States across all available years, using a log scale for GDP per capita. Points for the United States cluster at higher GDP levels and higher life expectancy, while points for Guatemala appear at lower GDP levels and lower life expectancy. The pattern is consistent with the idea that economic resources support investments in health systems, education, and social services that contribute to longer lives. However, the plot also suggests that at similar levels of GDP per capita, countries may still differ in life expectancy, indicating that governance, inequality, and access to care also play important roles. Because this figure includes only two countries, it cannot show the full global relationship between income and health, but it helps illustrate how Guatemala’s trajectory compares to a high income country.
+
+## **Missingness, time coverage, and any limitations**
+
+```{r}
+# Will help us check for missing values in key variables
+
+sum(is.na(guatemala_df$lifeExp))
+sum(is.na(guatemala_df$gdpPercap))
+sum(is.na(guatemala_df$pop))
+
+range(guatemala_df$year)
+range(us_df$year)
+```
+
+**Interpretation and connection**
+
+In the Gapminder dataset, the Guatemala observations used in this project cover the period from `r min(guatemala_df$year)` to `r max(guatemala_df$year)`, with data available at five year intervals. Within this range, there appear to be no missing values for life expectancy, GDP per capita, or population in the Guatemala subset, which simplifies the analysis and interpretation. The United States data cover the same years, allowing for a straightforward comparison across time.
+
+Despite these strengths, the dataset has important limitations. First, the five year spacing means that short term shocks—such as specific drought years, epidemics, or policy changes—may not be visible in the trends. Second, the data are aggregated at the national level, so they cannot show within country inequalities by region, ethnicity, or socioeconomic status. Third, Gapminder compiles data from multiple sources, and while it is widely used for teaching and visualization, it may not perfectly match official estimates from organizations like the World Bank (World Bank Group, 2017). As a result, the figures in this project should be interpreted as approximate indicators of long term patterns rather than precise measurements of any single year.
+
+## **Reflection**
+
+Exploring Guatemala’s data in Gapminder helped me connect quantitative trends in life expectancy and GDP per capita with qualitative evidence about people’s lived experiences in the health system. The steady rise in life expectancy suggests important progress over several decades, even in the context of conflict, poverty, and environmental stress. At the same time, the persistent gap between Guatemala and the United States highlights how structural inequities, limited resources, and historical exclusion continue to shape population health outcomes.
+
+I was surprised by how consistent the upward trend in life expectancy appears, given the depth of challenges described in studies of maternal health, rural service, and Indigenous communities (Chary et al., 2022; Ikezoe & Horiuchi, 2025; Olivas et al., 2023; Sethi et al., 2022). This raises questions about who benefits most from these gains and whether some groups remain left behind. If I were to extend this project, I would explore differences by region or socioeconomic status within Guatemala, examine cause specific mortality patterns, and compare Gapminder estimates more directly with World Bank and national statistics. Overall, this project reinforced the importance of working reproducibly in R and Quarto, using code to generate figures and summaries that can be updated and re run as new questions emerge.
+
+## **References**
+
+Chary, A., Hawkins, J., Flood, D., Martinez, B., Colom, M., & Austad, K. (2022). Medical students’ experiences of compulsory rural service in Guatemala: A qualitative study. *Rural and Remote Health, 22*(2). https://doi.org/10.22605/RRH6582
+
+CJA. (2009). *Guatemala – CJA*. The Center for Justice & Accountability. https://cja.org/where-we-work/guatemala/
+
+Ikezoe, H., & Horiuchi, S. (2025). A qualitative exploration of the mistreatment of women during childbirth in a rural Guatemalan hospital. *Reproductive Health, 22*(1), 197. https://doi.org/10.1186/s12978-025-02163-2
+
+Olivas, E. T., Muffoletto, M. V., Wallace, J., Stollak, I., & Perry, H. B. (2023). Reducing inequities in maternal and child health in rural Guatemala through the CBIO+ Approach of Curamericas: 6. Management of pregnancy complications at Community Birthing Centers (Casas Maternas Rurales). *International Journal for Equity in Health, 21*(Suppl. 2), 1–17. https://doi.org/10.1186/s12939-022-01758-6
+
+Sethi, R., Hill, K., Stalls, S., Moffson, S., Saenz de Tejada, S., Gomez, L., & Marroquin, M. A. (2022). An exploratory study of client and provider experience and perceptions of facility-based childbirth care in Quiché, Guatemala. *BMC Health Services Research, 22*, 1–15. https://doi.org/10.1186/s12913-022-07686-z
+
+Stansifer, C. L., Horst, O. H., Griffith, W. J., & Anderson, T. P. (2026, January 27). *Guatemala*. Encyclopedia Britannica. https://www.britannica.com/place/Guatemala
+
+World Bank Group. (2017). *Guatemala \| Data*. https://data.worldbank.org/country/guatemala
+
+World Food Programme. (2023). *Guatemala*. https://www.wfp.org/countries/guatemala
